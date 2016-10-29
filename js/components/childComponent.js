@@ -2,14 +2,15 @@
 */
 import { connect } from 'react-redux';
 import addItem from './../actions.js';
+// import {store} from './../app.js';
 
 class ChildComp extends React.Component{
 
-	constructor(dispatch, props, b){
-		// console.log(arguments);
-		super(dispatch, props, b);
-		this.dispatch = dispatch;
-	}
+	// constructor(dispatch, props, b){
+	// 	// console.log(arguments);
+	// 	super(dispatch, props, b);
+	// 	this.dispatch = dispatch;
+	// }
 
 	handleAddItem(){
 		var name = this.refs.item_name.value;
@@ -17,7 +18,9 @@ class ChildComp extends React.Component{
 
 		// console.log("- n > ", name);
 		// console.log("- q > ", quantity);
-		this.dispatch.dispatch(addItem({"name": name, "quantity": quantity}));
+		this.props.updateStore({"name": name, "quantity": quantity});
+		// store.dispatch(addItem());
+		// this.dispatch.dispatch(addItem({"name": name, "quantity": quantity}));
 	}
 
 	render(){
@@ -29,7 +32,18 @@ class ChildComp extends React.Component{
 	}
 }
 
-ChildComp = connect()(ChildComp)
+
+const mapDispatchToProps = (dispatch, ownProps) => {
+	console.log("inside update Store -->", dispatch, typeof(dispatch),"<-->", ownProps);
+  return {
+    updateStore: (item) => {
+    	console.log("inside update Store -->", item);
+        dispatch(addItem(item));
+    }
+  }
+}
+
+ChildComp = connect(null,mapDispatchToProps)(ChildComp)
 
 
 module.exports = ChildComp;

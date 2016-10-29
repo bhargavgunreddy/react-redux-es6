@@ -1,5 +1,6 @@
 /*  Grocery Item */
 import { connect } from 'react-redux';
+import addItem from './../actions.js';
 
 class GroceryList extends React.Component{
 	constructGroceryItem(item, index){
@@ -11,7 +12,7 @@ class GroceryList extends React.Component{
 	}
 
 	render(){
-		// console.log("GL props - >", this.props);
+		console.log("GL props - >", this.props);
 		return <table>
 					<thead>
 						<tr>
@@ -22,6 +23,7 @@ class GroceryList extends React.Component{
 					<tbody>
 						{this.props.items.map(this.constructGroceryItem)};
 					</tbody>
+					
 				</table>;
 	
 	}
@@ -34,24 +36,22 @@ GroceryList.PropTypes = {
 
 
 const mapStateToProps = (state) => {
-	// console.log("GL - >", state);
+	 console.log("GL updated - >", state);
   return {
-    items: state ? state: []
+    items: state ? state.groceries: []
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onTodoClick: (item) => {
-    	// console.log("dispatch -->", item);
-      dispatch(addItem(item))
-    }
-  }
-}
+// const mapDispatchToProps = (dispatch) => {
+// 	console.log(" ---> ", dispatch);
+//   return {
+//     onTodoClick: (item) => {
+//     	 console.log("dispatch -->", item, dispatch);
+//       dispatch(addItem(item))
+//     }
+//   }
+// }
 
-GroceryList = connect(
-						mapStateToProps,
-					  	mapDispatchToProps
-					)(GroceryList);
+GroceryList = connect(mapStateToProps)(GroceryList);
 
 module.exports = GroceryList;

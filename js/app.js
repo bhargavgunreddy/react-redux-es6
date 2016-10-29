@@ -10,7 +10,7 @@ import GroceryList from './components/Grocery';
 class Shop extends React.Component{
 
 	render(){
-		// console.log("Shop --> ",this.props);
+		 console.log("Shop --> ",this.props);
 		return <div>
 					<ChildComp/>
 					<GroceryList />	
@@ -20,34 +20,40 @@ class Shop extends React.Component{
 
 /* */
 
-var shopList = [
-					{
-						"name": "Dal",
-						"quantity": 10
-					},
-						{
-						"name": "Bread",
-						"quantity": 2
-					},	{
-						"name": "Rice",
-						"quantity": 5
-					}
-			];
+var shopList = {
+					'groceries': [
+									{
+										"name": "Dal",
+										"quantity": 10
+									},
+										{
+										"name": "Bread",
+										"quantity": 2
+									},	{
+										"name": "Rice",
+										"quantity": 5
+									}
+								 ]
+			};
 
-const initialState = { 
-						items:shopList	
-					};
+const initialState = shopList;	
+					
 
 /* Adding Reducers */
 
-function reduce(state = initialState, action){
+function reduce(state, action){
+
+	state = state ? state : initialState ;
+
 	switch(action.type){
 		case 'ADD_ITEM': 
-			// console.log("add Item",action);
-			return Object.assign([], state.items, new Array(action.item));
-
+			console.log("add Item -->", state);
+			var itemsList = state.groceries;//
+			itemsList.unshift(action.item);
+			return Object.assign({}, state, {'groceries':itemsList});
+			
 		default: 
-			// console.log("default");
+			console.log("default -->");
 			return state;
 	}
 	
@@ -58,19 +64,20 @@ function reduce(state = initialState, action){
 
 let store = createStore(reduce);
 
-// console.log("store == ", store);
+console.log("store == ", store);
 
 var sampleItem = {"name": "Curd", "quantity": "2"};
 store.dispatch(addItem(sampleItem));
 
-// console.log("store == ", store.getState());
+ console.log("store == ", store.getState());
 
-let unsubscribe = store.subscribe(() =>
-  // console.log(store.getState())
-)
+// let unsubscribe = store.subscribe(() =>
+//    console.log(store.getState())
+// )
 
-unsubscribe();
+// unsubscribe();
 
+export default store;
 
 
 ReactDOM.render(

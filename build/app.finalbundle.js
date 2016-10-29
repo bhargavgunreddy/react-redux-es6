@@ -46,6 +46,10 @@
 
 	/* WEBPACK VAR INJECTION */(function(React, ReactDOM) {'use strict';
 
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _reactRedux = __webpack_require__(172);
@@ -86,7 +90,7 @@
 		_createClass(Shop, [{
 			key: 'render',
 			value: function render() {
-				// console.log("Shop --> ",this.props);
+				console.log("Shop --> ", this.props);
 				return React.createElement(
 					'div',
 					null,
@@ -101,34 +105,36 @@
 
 	/* */
 
-	var shopList = [{
-		"name": "Dal",
-		"quantity": 10
-	}, {
-		"name": "Bread",
-		"quantity": 2
-	}, {
-		"name": "Rice",
-		"quantity": 5
-	}];
-
-	var initialState = {
-		items: shopList
+	var shopList = {
+		'groceries': [{
+			"name": "Dal",
+			"quantity": 10
+		}, {
+			"name": "Bread",
+			"quantity": 2
+		}, {
+			"name": "Rice",
+			"quantity": 5
+		}]
 	};
+
+	var initialState = shopList;
 
 	/* Adding Reducers */
 
-	function reduce() {
-		var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
-		var action = arguments[1];
+	function reduce(state, action) {
+
+		state = state ? state : initialState;
 
 		switch (action.type) {
 			case 'ADD_ITEM':
-				console.log("add Item", action);
-				return Object.assign([], state.items, new Array(action.item));
+				console.log("add Item -->", state);
+				var itemsList = state.groceries; //
+				itemsList.unshift(action.item);
+				return Object.assign({}, state, { 'groceries': itemsList });
 
 			default:
-				console.log("default");
+				console.log("default -->");
 				return state;
 		}
 	}
@@ -137,18 +143,21 @@
 
 	var store = (0, _redux.createStore)(reduce);
 
-	// console.log("store == ", store);
+	console.log("store == ", store);
 
 	var sampleItem = { "name": "Curd", "quantity": "2" };
 	store.dispatch((0, _actions2.default)(sampleItem));
 
 	console.log("store == ", store.getState());
 
-	var unsubscribe = store.subscribe(function () {
-		return console.log(store.getState());
-	});
+	// let unsubscribe = store.subscribe(() =>
+	//    console.log(store.getState())
+	// )
 
-	unsubscribe();
+	// unsubscribe();
+
+	exports.default = store;
+
 
 	ReactDOM.render(React.createElement(
 		_reactRedux.Provider,
@@ -23145,6 +23154,8 @@
 
 	/* WEBPACK VAR INJECTION */(function(React) {'use strict';
 
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _reactRedux = __webpack_require__(172);
@@ -23163,29 +23174,36 @@
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               */
 
 
+	// import {store} from './../app.js';
+
 	var ChildComp = function (_React$Component) {
 		_inherits(ChildComp, _React$Component);
 
-		function ChildComp(dispatch, props, b) {
+		function ChildComp() {
 			_classCallCheck(this, ChildComp);
 
-			var _this = _possibleConstructorReturn(this, (ChildComp.__proto__ || Object.getPrototypeOf(ChildComp)).call(this, dispatch, props, b));
-			// console.log(arguments);
-
-
-			_this.dispatch = dispatch;
-			return _this;
+			return _possibleConstructorReturn(this, (ChildComp.__proto__ || Object.getPrototypeOf(ChildComp)).apply(this, arguments));
 		}
 
 		_createClass(ChildComp, [{
 			key: 'handleAddItem',
+
+
+			// constructor(dispatch, props, b){
+			// 	// console.log(arguments);
+			// 	super(dispatch, props, b);
+			// 	this.dispatch = dispatch;
+			// }
+
 			value: function handleAddItem() {
 				var name = this.refs.item_name.value;
 				var quantity = this.refs.item_quantity.value;
 
-				console.log("- n > ", name);
-				console.log("- q > ", quantity);
-				this.dispatch.dispatch((0, _actions2.default)({ "name": name, "quantity": quantity }));
+				// console.log("- n > ", name);
+				// console.log("- q > ", quantity);
+				this.props.updateStore({ "name": name, "quantity": quantity });
+				// store.dispatch(addItem());
+				// this.dispatch.dispatch(addItem({"name": name, "quantity": quantity}));
 			}
 		}, {
 			key: 'render',
@@ -23209,7 +23227,17 @@
 		return ChildComp;
 	}(React.Component);
 
-	ChildComp = (0, _reactRedux.connect)()(ChildComp);
+	var mapDispatchToProps = function mapDispatchToProps(dispatch, ownProps) {
+		console.log("inside update Store -->", dispatch, typeof dispatch === 'undefined' ? 'undefined' : _typeof(dispatch), "<-->", ownProps);
+		return {
+			updateStore: function updateStore(item) {
+				console.log("inside update Store -->", item);
+				dispatch((0, _actions2.default)(item));
+			}
+		};
+	};
+
+	ChildComp = (0, _reactRedux.connect)(null, mapDispatchToProps)(ChildComp);
 
 	module.exports = ChildComp;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
@@ -23218,11 +23246,17 @@
 /* 198 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(React) {"use strict";
+	/* WEBPACK VAR INJECTION */(function(React) {'use strict';
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _reactRedux = __webpack_require__(172);
+
+	var _actions = __webpack_require__(196);
+
+	var _actions2 = _interopRequireDefault(_actions);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -23241,53 +23275,53 @@
 		}
 
 		_createClass(GroceryList, [{
-			key: "constructGroceryItem",
+			key: 'constructGroceryItem',
 			value: function constructGroceryItem(item, index) {
 				return React.createElement(
-					"tr",
+					'tr',
 					{ key: index },
 					React.createElement(
-						"td",
+						'td',
 						null,
 						item.name
 					),
 					React.createElement(
-						"td",
+						'td',
 						null,
 						item.quantity
 					)
 				);
 			}
 		}, {
-			key: "render",
+			key: 'render',
 			value: function render() {
 				// console.log("GL props - >", this.props);
 				return React.createElement(
-					"table",
+					'table',
 					null,
 					React.createElement(
-						"thead",
+						'thead',
 						null,
 						React.createElement(
-							"tr",
+							'tr',
 							null,
 							React.createElement(
-								"th",
+								'th',
 								null,
-								" Item Name "
+								' Item Name '
 							),
 							React.createElement(
-								"th",
+								'th',
 								null,
-								" Item Quantity "
+								' Item Quantity '
 							)
 						)
 					),
 					React.createElement(
-						"tbody",
+						'tbody',
 						null,
 						this.props.items.map(this.constructGroceryItem),
-						";"
+						';'
 					)
 				);
 			}
@@ -23303,20 +23337,21 @@
 	var mapStateToProps = function mapStateToProps(state) {
 		console.log("GL - >", state);
 		return {
-			items: state ? state : []
+			items: state ? state.groceries : []
 		};
 	};
 
-	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
-		return {
-			onTodoClick: function onTodoClick(item) {
-				console.log("dispatch -->", item);
-				dispatch(addItem(item));
-			}
-		};
-	};
+	// const mapDispatchToProps = (dispatch) => {
+	// 	console.log(" ---> ", dispatch);
+	//   return {
+	//     onTodoClick: (item) => {
+	//     	 console.log("dispatch -->", item, dispatch);
+	//       dispatch(addItem(item))
+	//     }
+	//   }
+	// }
 
-	GroceryList = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(GroceryList);
+	GroceryList = (0, _reactRedux.connect)(mapStateToProps)(GroceryList);
 
 	module.exports = GroceryList;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
