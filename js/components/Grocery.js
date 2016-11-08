@@ -11,7 +11,7 @@ class GroceryList extends React.Component{
 	}
 
 	render(){
-		// console.log("GL props - >", this.props);
+		console.log("GL props - >", this.props);
 		return <table>
 					<thead>
 						<tr>
@@ -33,25 +33,5 @@ GroceryList.PropTypes = {
 }
 
 
-const mapStateToProps = (state) => {
-	// console.log("GL - >", state);
-  return {
-    items: state ? state: []
-  }
-}
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onTodoClick: (item) => {
-    	// console.log("dispatch -->", item);
-      dispatch(addItem(item))
-    }
-  }
-}
-
-GroceryList = connect(
-						mapStateToProps,
-					  	mapDispatchToProps
-					)(GroceryList);
 
 module.exports = GroceryList;

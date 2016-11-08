@@ -50,19 +50,17 @@
 
 	var _reactRedux = __webpack_require__(172);
 
-	var _redux = __webpack_require__(179);
+	var _ChildContainer = __webpack_require__(196);
 
-	var _actions = __webpack_require__(196);
+	var _ChildContainer2 = _interopRequireDefault(_ChildContainer);
 
-	var _actions2 = _interopRequireDefault(_actions);
+	var _GroceryContainer = __webpack_require__(199);
 
-	var _ChildComponent = __webpack_require__(197);
+	var _GroceryContainer2 = _interopRequireDefault(_GroceryContainer);
 
-	var _ChildComponent2 = _interopRequireDefault(_ChildComponent);
+	var _store = __webpack_require__(201);
 
-	var _Grocery = __webpack_require__(198);
-
-	var _Grocery2 = _interopRequireDefault(_Grocery);
+	var _store2 = _interopRequireDefault(_store);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -86,12 +84,12 @@
 		_createClass(Shop, [{
 			key: 'render',
 			value: function render() {
-				// console.log("Shop --> ",this.props);
+				console.log("Shop --> ", this.props);
 				return React.createElement(
 					'div',
 					null,
-					React.createElement(_ChildComponent2.default, null),
-					React.createElement(_Grocery2.default, null)
+					React.createElement(_ChildContainer2.default, null),
+					React.createElement(_GroceryContainer2.default, null)
 				);
 			}
 		}]);
@@ -99,60 +97,9 @@
 		return Shop;
 	}(React.Component);
 
-	/* */
-
-	var shopList = [{
-		"name": "Dal",
-		"quantity": 10
-	}, {
-		"name": "Bread",
-		"quantity": 2
-	}, {
-		"name": "Rice",
-		"quantity": 5
-	}];
-
-	var initialState = {
-		items: shopList
-	};
-
-	/* Adding Reducers */
-
-	function reduce() {
-		var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
-		var action = arguments[1];
-
-		switch (action.type) {
-			case 'ADD_ITEM':
-				console.log("add Item", action);
-				return Object.assign([], state.items, new Array(action.item));
-
-			default:
-				console.log("default");
-				return state;
-		}
-	}
-
-	/* create Store */
-
-	var store = (0, _redux.createStore)(reduce);
-
-	// console.log("store == ", store);
-
-	var sampleItem = { "name": "Curd", "quantity": "2" };
-	store.dispatch((0, _actions2.default)(sampleItem));
-
-	console.log("store == ", store.getState());
-
-	var unsubscribe = store.subscribe(function () {
-		return console.log(store.getState());
-	});
-
-	unsubscribe();
-
 	ReactDOM.render(React.createElement(
 		_reactRedux.Provider,
-		{ store: store },
+		{ store: _store2.default },
 		React.createElement(Shop, null)
 	), document.getElementById('shop'));
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(34)))
@@ -23124,20 +23071,44 @@
 
 /***/ },
 /* 196 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var ADD_ITEM = 'ADD_ITEM';
+	var _reactRedux = __webpack_require__(172);
 
-	function addItem(item) {
-		return {
-			'type': ADD_ITEM,
-			'item': item
-		};
-	}
+	var _ChildComponent = __webpack_require__(197);
 
-	module.exports = addItem;
+	var _ChildComponent2 = _interopRequireDefault(_ChildComponent);
+
+	var _actions = __webpack_require__(198);
+
+	var _actions2 = _interopRequireDefault(_actions);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	// var ChildContainer = connect()(ChildComp)
+
+
+	var mapStateToProps = function mapStateToProps(state) {
+	  // console.log("GL - >", state);
+	  return {
+	    items: state ? state.items : []
+	  };
+	};
+
+	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+	  return {
+	    onTodoClick: function onTodoClick(item) {
+	      // console.log("dispatch -->", item);
+	      dispatch((0, _actions2.default)(item));
+	    }
+	  };
+	};
+
+	var ChildContainer = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_ChildComponent2.default);
+
+	module.exports = ChildContainer;
 
 /***/ },
 /* 197 */
@@ -23149,7 +23120,7 @@
 
 	var _reactRedux = __webpack_require__(172);
 
-	var _actions = __webpack_require__(196);
+	var _actions = __webpack_require__(198);
 
 	var _actions2 = _interopRequireDefault(_actions);
 
@@ -23183,13 +23154,15 @@
 				var name = this.refs.item_name.value;
 				var quantity = this.refs.item_quantity.value;
 
-				console.log("- n > ", name);
-				console.log("- q > ", quantity);
-				this.dispatch.dispatch((0, _actions2.default)({ "name": name, "quantity": quantity }));
+				// console.log("- n > ", name);
+				// console.log("- q > ", quantity);
+				this.props.onTodoClick({ "name": name, "quantity": quantity });
+				// this.dispatch.dispatch(addItem({"name": name, "quantity": quantity}));
 			}
 		}, {
 			key: 'render',
 			value: function render() {
+				console.log("Child COmp props --> ", this.props);
 				return React.createElement(
 					'div',
 					null,
@@ -23209,13 +23182,62 @@
 		return ChildComp;
 	}(React.Component);
 
-	ChildComp = (0, _reactRedux.connect)()(ChildComp);
-
 	module.exports = ChildComp;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
 /* 198 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	var ADD_ITEM = 'ADD_ITEM';
+
+	function addItem(item) {
+		return {
+			'type': ADD_ITEM,
+			'item': item
+		};
+	}
+
+	module.exports = addItem;
+
+/***/ },
+/* 199 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _reactRedux = __webpack_require__(172);
+
+	var _Grocery = __webpack_require__(200);
+
+	var _Grocery2 = _interopRequireDefault(_Grocery);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var mapStateToProps = function mapStateToProps(state) {
+	  console.log("GL - >", state);
+	  return {
+	    items: state ? state.items : []
+	  };
+	};
+
+	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+	  return {
+	    onTodoClick: function onTodoClick(item) {
+	      // console.log("dispatch -->", item);
+	      dispatch(addItem(item));
+	    }
+	  };
+	};
+
+	var GroceryContainer = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_Grocery2.default);
+
+	module.exports = GroceryContainer;
+
+/***/ },
+/* 200 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(React) {"use strict";
@@ -23261,7 +23283,7 @@
 		}, {
 			key: "render",
 			value: function render() {
-				// console.log("GL props - >", this.props);
+				console.log("GL props - >", this.props);
 				return React.createElement(
 					"table",
 					null,
@@ -23300,26 +23322,90 @@
 		items: React.PropTypes.Array
 	};
 
-	var mapStateToProps = function mapStateToProps(state) {
-		console.log("GL - >", state);
-		return {
-			items: state ? state : []
-		};
-	};
-
-	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
-		return {
-			onTodoClick: function onTodoClick(item) {
-				console.log("dispatch -->", item);
-				dispatch(addItem(item));
-			}
-		};
-	};
-
-	GroceryList = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(GroceryList);
-
 	module.exports = GroceryList;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 201 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _redux = __webpack_require__(179);
+
+	var _actions = __webpack_require__(198);
+
+	var _actions2 = _interopRequireDefault(_actions);
+
+	var _reducers = __webpack_require__(202);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var store = (0, _redux.createStore)(_reducers.reduce);
+
+	var unsubscribe = store.subscribe(function () {
+	  return console.log("store conTENT:: ", store.getState());
+	});
+
+	unsubscribe();
+
+	console.log("store created == ", store.getState());
+
+	var sampleItem = { "name": "Curd", "quantity": "2" };
+	store.dispatch((0, _actions2.default)(sampleItem));
+
+	console.log("store updated == ", store.getState());
+
+	module.exports = store;
+
+/***/ },
+/* 202 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	var shopList = [{
+		"name": "Dal",
+		"quantity": 10
+	}, {
+		"name": "Bread",
+		"quantity": 2
+	}, {
+		"name": "Rice",
+		"quantity": 5
+	}];
+
+	var initialState = {
+		'items': shopList
+	};
+
+	/* Adding Reducers */
+
+	function addItemFunc(state, action) {
+		var objArr = state;
+		objArr.items.unshift(action.item);
+		return objArr;
+	}
+
+	function reduce() {
+		var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
+		var action = arguments[1];
+
+		switch (action.type) {
+			case 'ADD_ITEM':
+				console.log("add Item", action);
+				var newArr = new Array(action.item);
+				var newList = newArr.concat(state.items);
+
+				return Object.assign({}, state, { 'items': newList });
+
+			default:
+				// console.log("default");
+				return state;
+		}
+	}
+
+	module.exports = { addItemFunc: addItemFunc, reduce: reduce };
 
 /***/ }
 /******/ ]);

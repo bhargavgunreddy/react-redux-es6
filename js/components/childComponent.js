@@ -17,10 +17,12 @@ class ChildComp extends React.Component{
 
 		// console.log("- n > ", name);
 		// console.log("- q > ", quantity);
-		this.dispatch.dispatch(addItem({"name": name, "quantity": quantity}));
+		this.props.onTodoClick({"name": name, "quantity": quantity});
+		// this.dispatch.dispatch(addItem({"name": name, "quantity": quantity}));
 	}
 
 	render(){
+		console.log("Child COmp props --> ", this.props );
 		return <div>
 			Item Name<input ref = "item_name" type = "text"/>
 			Item Quantity<input ref = "item_quantity" type = "text"/>
@@ -29,7 +31,7 @@ class ChildComp extends React.Component{
 	}
 }
 
-ChildComp = connect()(ChildComp)
+
 
 
 module.exports = ChildComp;
